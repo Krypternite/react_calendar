@@ -1,0 +1,99 @@
+$primary-color: rgb(180, 30, 30);
+
+* {
+    box-sizing: border-box;
+}
+
+@mixin dfc () {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.days-names-row {
+    display: flex;
+
+    :nth-child(1) {
+        font-weight: 700;
+        color: $primary-color
+    }
+}
+
+.month_row {
+    @include dfc();
+    justify-content: space-between;
+
+    .changers {
+        cursor: pointer;
+        padding: 0 1em;
+        font-size: .5em;
+        background: transparent;
+        outline: none;
+        box-shadow: none;
+        border: 0;
+        color: inherit;
+        font-weight: inherit;
+
+        &:active {
+            color: $primary-color;
+        }
+    }
+}
+
+
+
+.days,
+.box {
+    @include dfc();
+    width: 80px;
+    height: 80px;
+    padding: 1px;
+    content: ' ';
+
+    .today {
+        position: relative;
+        border-radius: 50%;
+        padding: 10px;
+        height: 2em;
+        width: 2em;
+        background-color: $primary-color;
+
+        span {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+    }
+}
+
+.box {
+    border-radius: 50%;
+    &:nth-child(1) {
+        color: rgb(194, 102, 102);
+    }
+}
+
+.row {
+    display: flex;
+}
+
+.todaybtn {
+
+    button {
+        cursor: pointer;
+        padding: 1em;
+        font-size: inherit;
+        background: transparent;
+        outline: none;
+        box-shadow: none;
+        color: inherit;
+        font-weight: 100;
+        visibility: hidden;
+        border-radius: 500px;
+
+        &.visible {
+            visibility: visible;
+        }
+    }
+}
