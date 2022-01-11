@@ -32,22 +32,23 @@ const Grid = () => {
     }
   }
 
-  const onMonthChange = (val, currentDate) => {
+  const onMonthChange = useCallback((val) => {
     gridBoxesArr = null;
     if (val > 0) {
       if (currentDate.getMonth() === 11) {
-        setDate(new Date(currentDate.getFullYear() + 1, 0, 1));
+        setDate(prevProps => new Date(prevProps.getFullYear() + 1, 0, 1));
       } else {
-        setDate(new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 1));
+        setDate(prevProps => new Date(prevProps.getFullYear(), prevProps.getMonth() + 1, 1));
       }
     } else {
       if (currentDate.getMonth() === 0) {
-        setDate(new Date(currentDate.getFullYear() - 1, 11, 1));
+        setDate(prevProps => new Date(prevProps.getFullYear() - 1, 11, 1));
       } else {
-        setDate(new Date(currentDate.getFullYear(), currentDate.getMonth() - 1, 1));
+        setDate(prevProps => new Date(prevProps.getFullYear(), prevProps.getMonth() - 1, 1));
       }
     }
-  };
+  }, [currentDate]);
+
 
   useEffect(() => {
     const slider = document.getElementById('grid');
@@ -61,20 +62,20 @@ const Grid = () => {
       touchendX = e.changedTouches[0].screenX;
       console.log('swipped');
       if (touchendX < touchstartX) {
-        onMonthChange(1, currentDate);
+        onMonthChange(1);
       }
       if (touchendX > touchstartX) {
-        onMonthChange(-1, currentDate);
+        onMonthChange(-1);
       }
     }
     slider.addEventListener('touchstart', touchStart);
     slider.addEventListener('touchend', touchEnd);
 
     return function () {
-      window.removeEventListener(slider, touchStart);
-      window.removeEventListener(slider, touchEnd);
+      slider.removeEventListener('touchstart', touchStart);
+      slider.removeEventListener('touchend', touchEnd);
     };
-  }, []);
+  }, [currentDate]);
 
   const onYearChange = (val) => {
     gridBoxesArr = null;
