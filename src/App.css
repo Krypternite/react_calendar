@@ -10,9 +10,9 @@
   color: white;
 }
 
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
+.main {
+  max-width: 100%;
+  padding: 0 1em;
 }
 
 @media (prefers-reduced-motion: no-preference) {

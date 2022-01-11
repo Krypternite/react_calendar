@@ -1,12 +1,15 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import styles from './Grid.module.scss';
 const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 const Grid = () => {
+  document.title = `Kryptonian's Calendar`;
+
   const [currentDate, setDate] = useState(new Date());
   const [today] = useState(new Date());
   const showToday = currentDate.getFullYear() === today.getFullYear() && currentDate.getMonth() === today.getMonth();
   let gridBoxesArr = useRef(null).current;
   let currentDay = today.getDate();
+
   if (!gridBoxesArr) {
     gridBoxesArr = Array.from({ length: 6 }, (e) => Array(7).fill(null));
     let startDay = new Date(currentDate.getFullYear(), currentDate.getMonth()).getDay();
@@ -29,7 +32,7 @@ const Grid = () => {
     }
   }
 
-  const onMonthChange = (val) => {
+  const onMonthChange = (val, currentDate) => {
     gridBoxesArr = null;
     if (val > 0) {
       if (currentDate.getMonth() === 11) {
@@ -46,6 +49,33 @@ const Grid = () => {
     }
   };
 
+  useEffect(() => {
+    const slider = document.getElementById('grid');
+    let touchstartX = 0;
+    let touchendX = 0;
+    function touchStart(e) {
+      touchstartX = e.changedTouches[0].screenX;
+    }
+
+    function touchEnd(e) {
+      touchendX = e.changedTouches[0].screenX;
+      console.log('swipped');
+      if (touchendX < touchstartX) {
+        onMonthChange(1, currentDate);
+      }
+      if (touchendX > touchstartX) {
+        onMonthChange(-1, currentDate);
+      }
+    }
+    slider.addEventListener('touchstart', touchStart);
+    slider.addEventListener('touchend', touchEnd);
+
+    return function () {
+      window.removeEventListener(slider, touchStart);
+      window.removeEventListener(slider, touchEnd);
+    };
+  }, []);
+
   const onYearChange = (val) => {
     gridBoxesArr = null;
     if (val > 0) {
@@ -57,10 +87,10 @@ const Grid = () => {
 
   const goToToday = () => {
     setDate(new Date());
-  }
+  };
 
   return (
-    <div>
+    <div className="main">
       <h1 className={styles.month_row}>
         <button onClick={() => onYearChange(-1)} className={styles.changers}>
           &lt;
@@ -71,11 +101,11 @@ const Grid = () => {
         </button>
       </h1>
       <h2 className={styles.month_row}>
-        <button onClick={() => onMonthChange(-1)} className={styles.changers}>
+        <button onClick={() => onMonthChange(-1, currentDate)} className={styles.changers}>
           &lt;
         </button>
         {new Intl.DateTimeFormat('en-GB', { month: 'long' }).format(currentDate)}
-        <button onClick={() => onMonthChange(1)} className={styles.changers}>
+        <button onClick={() => onMonthChange(1, currentDate)} className={styles.changers}>
           &gt;
         </button>
       </h2>
@@ -86,20 +116,24 @@ const Grid = () => {
           </div>
         ))}
       </div>
-      {gridBoxesArr.map((weekRow, i) => (
-        <div className={styles.row} key={i}>
-          {weekRow.map((day, i) => (
-            <div key={i} className={styles.box}>
-              <span className={showToday && day?.isCurrent ? styles.today : null}>
-                <span>{day?.dayNumber}</span>
-              </span>
-            </div>
-          ))}
-        </div>
-      ))}
+      <div id="grid">
+        {gridBoxesArr.map((weekRow, i) => (
+          <div className={styles.row} key={i}>
+            {weekRow.map((day, i) => (
+              <div key={i} className={styles.box}>
+                <span className={showToday && day?.isCurrent ? styles.today : null}>
+                  <span>{day?.dayNumber}</span>
+                </span>
+              </div>
+            ))}
+          </div>
+        ))}
+      </div>
 
       <div className={styles.todaybtn}>
-        <button className={showToday ? '' : styles.visible} onClick={goToToday}>Go To Today</button>
+        <button className={showToday ? '' : styles.visible} onClick={goToToday}>
+          Go To Today
+        </button>
       </div>
     </div>
   );
